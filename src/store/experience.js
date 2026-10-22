@@ -21,6 +21,8 @@ export const state = {
   spin: 0,
   spinVelocity: 0,
   dragging: false,
+  paused: false,
+  hidden: false,
   // quality tier detected at boot: 'high' | 'low'
   quality: 'high',
   // reduced motion preference
@@ -55,10 +57,10 @@ export function detectQuality() {
 export function webglSupported() {
   try {
     const c = document.createElement('canvas');
-    return !!(
-      window.WebGLRenderingContext &&
-      (c.getContext('webgl2') || c.getContext('webgl'))
-    );
+    const gl = c.getContext('webgl2') || c.getContext('webgl');
+    if (!gl) return false;
+    gl.getExtension('WEBGL_lose_context')?.loseContext();
+    return true;
   } catch {
     return false;
   }

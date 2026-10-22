@@ -1,149 +1,70 @@
-/* ============================================================
-   ExperienceCanvas — the single WebGL canvas for the whole
-   page. Fixed behind content (pointer-events: none), except
-   while the Showroom chapter is active, when App re-enables
-   pointer input so users can drag-spin the device.
-
-   One canvas = one GL context, no remounts on scroll, and a
-   cinematic camera that flies between chapters written by the
-   DOM layer into store/experience.js.
-   ============================================================ */
-
-import { Suspense, useMemo, useRef } from 'react';
+import { Suspense, useEffect, useRef } from 'react';
 import * as THREE from 'three';
-import { Canvas, useFrame } from '@react-three/fiber';
-import { ContactShadows, Float } from '@react-three/drei';
-import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing';
-
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import IPhone, { usePhoneAssets } from './IPhone';
 import StudioEnvironment from './StudioEnvironment';
 import CinematicRig from './CinematicRig';
 import { state } from '../../store/experience';
 import { finishes } from '../../constants';
-
-/* Load wallpaper textures once; sRGB + mipmaps tuned for screens. */
-function useWallpapers() {
-  return useMemo(() => {
-    const loader = new THREE.TextureLoader();
-    return finishes.map((f) => {
-      const tex = loader.load(f.screen);
-      tex.colorSpace = THREE.SRGBColorSpace;
-      tex.anisotropy = 4;
-      return tex;
-    });
-  }, []);
+function ContextHealth({ onError }) {
+  const { gl } = useThree();
+  useEffect(() => {
+    const canvas = gl.domElement;
+    const lost = (e) => {
+      e.preventDefault();
+      onError();
+    };
+    canvas.addEventListener('webglcontextlost', lost);
+    return () => canvas.removeEventListener('webglcontextlost', lost);
+  }, [gl, onError]);
+  return null;
 }
-
-/* Applies showroom drag-spin to the phone group while the
-   camera is inside chapter 3 (showroom window). Outside it,
-   the spin target relaxes back to the hero pose. */
-function SpinDriver({ phoneRef }) {
+function Rotation({ phoneRef }) {
   useFrame((_, dt) => {
+    if (state.hidden) return;
     const g = phoneRef.current;
-    if (!g) return;
-
-    const inShowroom = state.chapter > 2.5 && state.chapter < 3.5;
-
-    if (inShowroom) {
-      if (!state.dragging) {
-        // inertia decay + slow autoplay torque when nearly stopped
-        state.spinVelocity *= 0.95;
-        if (!state.reducedMotion && Math.abs(state.spinVelocity) < 0.0016) {
-          state.spinVelocity += 0.0011;
-        }
-        state.spin += state.spinVelocity;
-      }
-      g.rotation.y = THREE.MathUtils.damp(
-        g.rotation.y,
-        Math.PI + state.spin,
-        8,
-        Math.min(dt, 0.1)
-      );
-      g.rotation.x = THREE.MathUtils.damp(g.rotation.x, 0.04, 3, dt);
-    } else {
-      // hand control back to the rig / parallax
-      state.spin = g.rotation.y - Math.PI;
+    if (!g || state.targetChapter !== 3) return;
+    const delta = Math.min(dt, 0.05);
+    if (!state.dragging) {
+      state.spinVelocity *= Math.exp(-5 * delta);
+      state.spin += state.spinVelocity * delta * 60;
+      if (!state.reducedMotion && !state.paused) state.spin += delta * 0.16;
     }
+    g.rotation.y = THREE.MathUtils.damp(g.rotation.y, Math.PI + state.spin, 9, delta);
+    g.rotation.x = THREE.MathUtils.damp(g.rotation.x, 0.08, 4, delta);
+    g.rotation.z = THREE.MathUtils.damp(g.rotation.z, -0.08, 4, delta);
   });
   return null;
 }
-
-function SceneContents({ finishIndex }) {
+function Scene({ finishIndex, onError }) {
   const assets = usePhoneAssets();
-  const wallpapers = useWallpapers();
   const phoneRef = useRef();
-
-  // finish comes from React state (App) — deterministic, no stale reads
-  const activeFinish = Math.min(finishIndex, wallpapers.length - 1);
-  const finish = {
-    tint: finishes[activeFinish].tint,
-    screenTexture: wallpapers[activeFinish],
-  };
-
   return (
     <>
-      <Suspense fallback={null}>
-        <StudioEnvironment quality={state.quality} />
-
-        <Float
-          speed={state.reducedMotion ? 0 : 1.4}
-          rotationIntensity={0}
-          floatIntensity={state.reducedMotion ? 0 : 0.3}
-          floatingRange={[-0.03, 0.05]}
-        >
-          <group ref={phoneRef} scale={1.05} rotation={[0, Math.PI, 0]}>
-            <SpinDriver phoneRef={phoneRef} />
-            <IPhone assets={assets} finish={finish} />
-          </group>
-        </Float>
-
-        <ContactShadows
-          position={[0, -0.98, 0]}
-          opacity={0.55}
-          scale={5}
-          blur={2.6}
-          far={2}
-          resolution={state.quality === 'high' ? 512 : 256}
-          color="#000000"
-        />
-      </Suspense>
-
+      <ContextHealth onError={onError} />
+      <StudioEnvironment quality={state.quality} />
+      <group ref={phoneRef} rotation={[0.12, Math.PI - 0.45, -0.17]}>
+        <IPhone assets={assets} finish={finishes[finishIndex]} />
+      </group>
       <CinematicRig phoneRef={phoneRef} />
-
-      {state.quality === 'high' && (
-        <EffectComposer multisampling={4}>
-          <Bloom
-            intensity={state.reducedMotion ? 0.3 : 0.55}
-            luminanceThreshold={0.85}
-            luminanceSmoothing={0.25}
-            mipmapBlur
-          />
-          <Vignette eskil={false} offset={0.18} darkness={0.85} />
-        </EffectComposer>
-      )}
+      <Rotation phoneRef={phoneRef} />
     </>
   );
 }
-
-export default function ExperienceCanvas({ finishIndex = 0 }) {
+export default function ExperienceCanvas({ finishIndex = 0, onError }) {
   return (
-    <div className="fixed inset-0 z-0">
-      <Canvas
-        dpr={state.quality === 'high' ? [1, 2] : [1, 1.5]}
-        camera={{ position: [0, 0.05, 2.6], fov: 36, near: 0.1, far: 20 }}
-        gl={{
-          antialias: true,
-          powerPreference: 'high-performance',
-          alpha: true,
-        }}
-        frameloop="always"
-        onCreated={({ gl }) => {
-          gl.toneMapping = THREE.ACESFilmicToneMapping;
-          gl.toneMappingExposure = 1.05;
-        }}
-      >
-        <SceneContents finishIndex={finishIndex} />
-      </Canvas>
-    </div>
+    <Canvas
+      dpr={state.quality === 'high' ? [1, 1.75] : [1, 1.25]}
+      camera={{ position: [0, 0, 4.6], fov: 32, near: 0.1, far: 30 }}
+      gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
+      onCreated={({ gl }) => {
+        gl.toneMapping = THREE.ACESFilmicToneMapping;
+        gl.toneMappingExposure = 1.35;
+      }}
+    >
+      <Suspense fallback={null}>
+        <Scene finishIndex={finishIndex} onError={onError} />
+      </Suspense>
+    </Canvas>
   );
 }

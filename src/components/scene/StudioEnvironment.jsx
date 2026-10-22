@@ -5,7 +5,8 @@
    the titanium its long anisotropic-looking highlights.
    ============================================================ */
 
-import { Environment, Lightformer } from '@react-three/drei';
+import { Environment } from '@react-three/drei/core/Environment';
+import { Lightformer } from '@react-three/drei/core/Lightformer';
 
 export default function StudioEnvironment({ quality = 'high' }) {
   const resolution = quality === 'high' ? 256 : 128;
@@ -47,15 +48,16 @@ export default function StudioEnvironment({ quality = 'high' }) {
           scale={[9, 0.4, 1]}
         />
         {/* Top line for the glass front */}
-        <Lightformer
-          form="ring"
-          intensity={3}
-          color="#ffffff"
-          position={[0, 6, 2]}
-          scale={3}
-        />
+        <Lightformer form="ring" intensity={3} color="#ffffff" position={[0, 6, 2]} scale={3} />
         {/* Dark base so reflections have contrast */}
-        <Lightformer form="rect" intensity={0.25} color="#101014" position={[0, -6, 0]} scale={[14, 14, 1]} rotation-x={Math.PI / 2} />
+        <Lightformer
+          form="rect"
+          intensity={0.25}
+          color="#101014"
+          position={[0, -6, 0]}
+          scale={[14, 14, 1]}
+          rotation-x={Math.PI / 2}
+        />
       </Environment>
 
       {/* Direct spots for specular pop on lenses */}

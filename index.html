@@ -1,15 +1,19 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/assets/images/apple.svg" />
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2714%27 fill=%27%2308090b%27/%3E%3Cpath d=%27M16 48 32 14 48 48M22 36h20%27 fill=%27none%27 stroke=%27%23d0bda2%27 stroke-width=%273%27/%3E%3C/svg%3E"
+    />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#050507" />
     <meta
       name="description"
       content="AURA ONE — a cinematic, interactive 3D product experience. Crafted with React Three Fiber, GSAP and light."
     />
-    <title>AURA ONE — Titanium. Forged in Light.</title>
+    <title>AURA ONE — Beyond the ordinary.</title>
 
     <style>
       /* Critical CSS: the curtain stays until the WebGL scene is ready */
@@ -30,7 +34,9 @@
         align-items: center;
         justify-content: center;
         background: radial-gradient(120% 90% at 50% 40%, #0c0d12 0%, #050507 70%);
-        transition: opacity 0.9s ease, visibility 0.9s;
+        transition:
+          opacity 0.9s ease,
+          visibility 0.9s;
       }
       #boot.done {
         opacity: 0;
@@ -39,7 +45,11 @@
       }
       .boot-inner {
         text-align: center;
-        font-family: ui-sans-serif, -apple-system, 'Helvetica Neue', sans-serif;
+        font-family:
+          ui-sans-serif,
+          -apple-system,
+          'Helvetica Neue',
+          sans-serif;
       }
       .boot-ring {
         width: 46px;
@@ -81,6 +91,11 @@
         </noscript>
       </div>
     </div>
+    <script>
+      window.setTimeout(function () {
+        document.getElementById('boot').classList.add('done');
+      }, 4000);
+    </script>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

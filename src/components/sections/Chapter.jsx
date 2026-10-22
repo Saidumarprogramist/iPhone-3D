@@ -1,32 +1,67 @@
-/* Generic narrative chapter: eyebrow + big lines + copy, laid to
-   one side so the persistent 3D device keeps breathing space. */
-import { chapters } from '../../constants';
-
-export default function Chapter({ index, align = 'left', extra }) {
-  const c = chapters[index];
-  const right = align === 'right';
-
+export default function Chapter({ index, align }) {
+  const engineering = index === 1;
   return (
     <section
-      id={c.id}
-      data-chapter={String(index)}
-      className="relative min-h-[110dvh] flex items-center grain"
-      aria-label={c.eyebrow}
+      id={engineering ? 'chip' : 'camera'}
+      data-chapter={index}
+      className={`story-section ${align === 'right' ? 'story-right' : ''}`}
     >
-      <div className="screen-max-width px-5 sm:px-10 w-full">
-        <div className={`max-w-xl ${right ? 'ml-auto text-right' : ''}`}>
-          <p className="eyebrow reveal">{c.eyebrow}</p>
-          <h2 className="display-l mt-5" data-lines>
-            {c.titleLines.map((line) => (
-              <span key={line} className="block">{line}</span>
-            ))}
-          </h2>
-          <p className="reveal mt-6 text-[15px] leading-relaxed text-mist" data-delay="0.15">
-            {c.copy}
-          </p>
-          {extra}
+      <div className="story-content">
+        <p className="eyebrow reveal">
+          <span className="section-number">0{index + 1} /</span>{' '}
+          {engineering ? 'THE ART OF ENGINEERING' : 'A NEW WAY TO SEE'}
+        </p>
+        <h2 data-lines>
+          {engineering ? (
+            <>
+              <span>Power.</span>
+              <span>
+                In its <em>purest</em>
+              </span>
+              <span>form.</span>
+            </>
+          ) : (
+            <>
+              <span>Find beauty</span>
+              <span>
+                in the <em>unseen.</em>
+              </span>
+            </>
+          )}
+        </h2>
+        <p className="story-description reveal">
+          {engineering
+            ? 'An exercise in beautiful restraint. A brushed titanium shell meets a luminous edge-to-edge display. Nothing extra. Nothing overlooked.'
+            : 'Chase the light. Get closer to the detail. A three-lens camera system imagined for the moments you never want to lose.'}
+        </p>
+        <div className="detail-grid reveal">
+          {(engineering
+            ? [
+                ['Ti', 'GRADE 5', 'Lightness. With strength.'],
+                ['120', 'HZ DISPLAY CONCEPT', 'Every movement, fluid.'],
+              ]
+            : [
+                ['48', 'MP CAMERA CONCEPT', 'A different kind of detail.'],
+                ['3', 'LENS SYSTEM', 'More ways to tell the story.'],
+              ]
+          ).map(([value, label, text]) => (
+            <div key={label}>
+              <strong>
+                {value}
+                <span>{value === 'Ti' ? ' / 22' : '+'}</span>
+              </strong>
+              <small>{label}</small>
+              <p>{text}</p>
+            </div>
+          ))}
         </div>
+        <a href="#showroom" className="text-link reveal">
+          Make it yours <span>↗</span>
+        </a>
       </div>
+      <span className="vertical-caption" aria-hidden="true">
+        {engineering ? 'PRECISION IS A FEELING.' : 'EVERY PERSPECTIVE MATTERS.'}
+      </span>
     </section>
   );
 }

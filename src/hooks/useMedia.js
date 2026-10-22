@@ -6,7 +6,7 @@ export function usePrefersReducedMotion() {
   const [reduced, setReduced] = useState(
     () =>
       typeof window !== 'undefined' &&
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches,
   );
 
   useEffect(() => {
@@ -21,7 +21,7 @@ export function usePrefersReducedMotion() {
 
 export function useIsMobile(breakpoint = 768) {
   const [mobile, setMobile] = useState(
-    () => typeof window !== 'undefined' && window.innerWidth < breakpoint
+    () => typeof window !== 'undefined' && window.innerWidth < breakpoint,
   );
 
   useEffect(() => {

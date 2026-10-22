@@ -1,154 +1,155 @@
-/* ============================================================
-   App — orchestrates the whole experience.
-
-   Boot: detect WebGL + quality tier, then lazy-mount the single
-   R3F canvas (code-split so DOM paints first). Global pointer
-   tracking feeds parallax; while the Showroom chapter is active
-   a transparent drag-layer captures gestures to spin the device
-   (wheel still scrolls the page). No WebGL → pure-DOM fallback.
-   ============================================================ */
-
-import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Component, lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import Navbar from './components/Navbar';
 import Hero from './components/sections/Hero';
 import Marquee from './components/sections/Marquee';
 import Chapter from './components/sections/Chapter';
-import SpecsGrid from './components/sections/SpecsGrid';
 import Showroom from './components/sections/Showroom';
 import CTA from './components/sections/CTA';
 import Footer from './components/Footer';
+import Modal from './components/Modal';
 import useScrollChapters from './hooks/useScrollChapters';
 import { usePrefersReducedMotion } from './hooks/useMedia';
-import {
-  detectQuality,
-  setPointer,
-  state,
-  webglSupported,
-} from './store/experience';
+import { detectQuality, setPointer, state, webglSupported } from './store/experience';
 
 const ExperienceCanvas = lazy(() => import('./components/scene/ExperienceCanvas'));
-const Fallback = lazy(() => import('./components/Fallback'));
+class SceneBoundary extends Component {
+  state = { failed: false };
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+  componentDidCatch() {
+    this.props.onError();
+  }
+  render() {
+    return this.state.failed ? null : this.props.children;
+  }
+}
 
 export default function App() {
-  const supported = useMemo(() => webglSupported(), []);
+  const [supported, setSupported] = useState(webglSupported);
   const reduced = usePrefersReducedMotion();
-  const [ready, setReady] = useState(false);
   const [finishIndex, setFinishIndex] = useState(0);
   const [inShowroom, setInShowroom] = useState(false);
-  const dragLayerRef = useRef(null);
+  const [paused, setPaused] = useState(false);
+  const [modal, setModal] = useState(null);
+  const dragRef = useRef(null);
+  const ready = useCallback(() => document.getElementById('boot')?.classList.add('done'), []);
+  const fail = useCallback(() => {
+    setSupported(false);
+    ready();
+  }, [ready]);
+  useScrollChapters(ready, setInShowroom, reduced);
 
-  // runtime flags into the shared store
   useEffect(() => {
     state.quality = detectQuality();
     state.reducedMotion = reduced;
   }, [reduced]);
-
-  // global pointer → parallax
   useEffect(() => {
-    const onMove = (e) => setPointer(e.clientX, e.clientY);
-    window.addEventListener('pointermove', onMove, { passive: true });
-    return () => window.removeEventListener('pointermove', onMove);
+    state.paused = paused;
+  }, [paused]);
+  useEffect(() => {
+    const move = (e) => setPointer(e.clientX, e.clientY);
+    const visibility = () => {
+      state.hidden = document.hidden;
+    };
+    window.addEventListener('pointermove', move, { passive: true });
+    document.addEventListener('visibilitychange', visibility);
+    return () => {
+      window.removeEventListener('pointermove', move);
+      document.removeEventListener('visibilitychange', visibility);
+    };
   }, []);
-
-  // showroom activation: App owns the flag so the gesture layer
-  // can react to it; hooks call this from a ScrollTrigger onEnter/onLeave.
-  const showroomToggled = useCallback((active) => setInShowroom(active), []);
-
-  // drag-spin gestures (only when the layer is interactive)
   useEffect(() => {
-    const el = dragLayerRef.current;
-    if (!el || !inShowroom) return;
-
-    let lastX = 0;
+    const el = dragRef.current;
+    if (!el || !inShowroom || !supported) return;
+    let last = 0;
     const down = (e) => {
+      if (e.button !== 0) return;
       state.dragging = true;
-      lastX = e.clientX;
-      el.setPointerCapture?.(e.pointerId);
+      last = e.clientX;
+      el.setPointerCapture(e.pointerId);
     };
     const move = (e) => {
       if (!state.dragging) return;
-      const dx = (e.clientX - lastX) / window.innerWidth;
-      lastX = e.clientX;
-      state.spin += dx * Math.PI * 2;
-      state.spinVelocity = dx * 0.6;
+      const dx = e.clientX - last;
+      last = e.clientX;
+      state.spin += dx * 0.009;
+      state.spinVelocity = dx * 0.002;
     };
     const up = () => {
       state.dragging = false;
     };
-
     el.addEventListener('pointerdown', down);
     el.addEventListener('pointermove', move);
     el.addEventListener('pointerup', up);
     el.addEventListener('pointercancel', up);
+    el.addEventListener('lostpointercapture', up);
     return () => {
-      state.dragging = false;
+      up();
       el.removeEventListener('pointerdown', down);
       el.removeEventListener('pointermove', move);
       el.removeEventListener('pointerup', up);
       el.removeEventListener('pointercancel', up);
+      el.removeEventListener('lostpointercapture', up);
     };
-  }, [inShowroom]);
-
-  const onReady = useCallback(() => setReady(true), []);
-  useScrollChapters(supported ? onReady : null, showroomToggled);
-
-  // fallback path also lifts the curtain
-  useEffect(() => {
-    if (supported) return;
-    const t = setTimeout(onReady, 400);
-    return () => clearTimeout(t);
-  }, [supported, onReady]);
-
-  useEffect(() => {
-    if (!ready) return;
-    document.getElementById('boot')?.classList.add('done');
-  }, [ready]);
-
-  if (!supported) {
-    return (
-      <Suspense fallback={null}>
-        <Fallback reason="webgl" />
-      </Suspense>
-    );
-  }
+  }, [inShowroom, supported]);
 
   return (
-    <>
-      <a href="#main" className="skip-link">Skip to content</a>
+    <div className={`experience finish-${finishIndex} ${supported ? '' : 'classic-mode'}`}>
+      <a href="#main" className="skip-link">
+        Skip to content
+      </a>
       <div className="scroll-rail" aria-hidden="true" />
-
-      {/* single persistent WebGL layer, never receives pointers */}
-      <div className="fixed inset-0 z-0" style={{ pointerEvents: 'none' }} aria-hidden="true">
-        <Suspense fallback={null}>
-          <ExperienceCanvas finishIndex={finishIndex} />
-        </Suspense>
+      <div className="ambient-orb" aria-hidden="true" />
+      <div className="stage-grid" aria-hidden="true" />
+      <div className="scene-layer" aria-hidden="true">
+        {supported ? (
+          <SceneBoundary onError={fail}>
+            <Suspense fallback={null}>
+              <ExperienceCanvas finishIndex={finishIndex} onError={fail} />
+            </Suspense>
+          </SceneBoundary>
+        ) : (
+          <div className="css-device">
+            <div className="css-lenses">
+              <i />
+              <i />
+              <i />
+            </div>
+            <span>A</span>
+          </div>
+        )}
       </div>
-
-      {/* gesture layer: transparent, only live inside the showroom */}
-      <div
-        ref={dragLayerRef}
-        className={`fixed inset-0 z-[5] ${inShowroom ? 'cursor-grab active:cursor-grabbing' : 'pointer-events-none'}`}
-        style={{ touchAction: 'pan-y' }}
-        aria-hidden="true"
-      />
-
-      {/* legibility veil over the scene */}
-      <div
-        className="fixed inset-0 z-[1] pointer-events-none bg-gradient-to-r from-ink-0/70 via-transparent to-ink-0/40"
-        aria-hidden="true"
-      />
-
       <Navbar />
-
-      <main id="main" className="relative z-10">
-        <Hero />
+      <aside className="chapter-nav" aria-label="Chapters">
+        {['hero', 'chip', 'camera', 'showroom'].map((id, i) => (
+          <a
+            key={id}
+            href={`#${id}`}
+            aria-label={['Introduction', 'Engineering', 'Camera', 'Finish studio'][i]}
+          >
+            <span>0{i + 1}</span>
+            <i />
+          </a>
+        ))}
+      </aside>
+      <main id="main">
+        <Hero onFilm={() => setModal('film')} />
         <Marquee />
-        <Chapter index={1} align="right" extra={<SpecsGrid />} />
-        <Chapter index={2} align="left" />
-        <Showroom finishIndex={finishIndex} onChange={setFinishIndex} />
-        <CTA />
-        <Footer />
+        <Chapter index={1} align="right" />
+        <Chapter index={2} />
+        <Showroom
+          finishIndex={finishIndex}
+          onChange={setFinishIndex}
+          paused={paused}
+          onPause={() => setPaused((v) => !v)}
+          dragRef={dragRef}
+          supported={supported}
+        />
+        <CTA onOpen={() => setModal('summary')} />
       </main>
-    </>
+      <Footer />
+      {modal && <Modal type={modal} finishIndex={finishIndex} onClose={() => setModal(null)} />}
+    </div>
   );
 }

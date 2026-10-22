@@ -1,48 +1,46 @@
-import { BRAND, chapters } from '../../constants';
-
-const c = chapters[0];
-
-export default function Hero() {
+export default function Hero({ onFilm }) {
   return (
-    <section
-      id="hero"
-      data-chapter="0"
-      className="relative min-h-[100dvh] flex flex-col justify-end grain"
-      aria-label={`${BRAND} introduction`}
-    >
-      {/* top gradient veil so navbar always reads */}
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-ink-0/80 to-transparent" />
-
-      <div className="screen-max-width px-5 sm:px-10 pb-16 sm:pb-24">
-        <p className="eyebrow reveal">{c.eyebrow}</p>
-
-        <h1 className="display-xl mt-4" data-lines>
-          {c.titleLines.map((line) => (
-            <span key={line} className="block">
-              {line === 'Forged in Light.' ? (
-                <span className="grad-gold">{line}</span>
-              ) : (
-                line
-              )}
-            </span>
-          ))}
+    <section id="hero" data-chapter="0" className="hero-section">
+      <div className="hero-topline">
+        <span className="live-dot" /> INDEPENDENT DESIGN CONCEPT{' '}
+        <span className="hero-edition">EDITION — 001 / 2026</span>
+      </div>
+      <div className="hero-wordmark" aria-hidden="true">
+        AURA<span>ONE</span>
+      </div>
+      <div className="hero-copy">
+        <p className="eyebrow reveal">Less device. More possibility.</p>
+        <h1 data-lines>
+          <span>Beyond</span>
+          <span>
+            the <em>ordinary.</em>
+          </span>
         </h1>
-
-        <div className="mt-8 flex flex-col sm:flex-row sm:items-end gap-8 sm:gap-16">
-          <p className="reveal max-w-md text-[15px] leading-relaxed text-mist" data-delay="0.1">
-            {c.copy}
-          </p>
-          <div className="reveal flex items-center gap-4" data-delay="0.2">
-            <a href="#showroom" className="btn-gold">Explore the device</a>
-            <a href="#chip" className="btn-ghost">Watch the film ↓</a>
-          </div>
+        <p className="intro-copy reveal">
+          Sculpted in titanium. Defined by light.
+          <br />A different perspective on what comes next.
+        </p>
+        <div className="hero-actions reveal">
+          <a className="btn-gold" href="#showroom">
+            Enter the studio <span>↗</span>
+          </a>
+          <button className="film-link" onClick={onFilm}>
+            <span className="play-icon">▶</span> Play the film <small>00:05</small>
+          </button>
         </div>
       </div>
-
-      {/* scroll cue */}
-      <div className="absolute left-1/2 -translate-x-1/2 bottom-6 hidden sm:flex flex-col items-center gap-2 text-mist" aria-hidden="true">
-        <span className="text-[10px] uppercase tracking-[0.4em]">Scroll</span>
-        <span className="w-px h-10 bg-gradient-to-b from-gold to-transparent animate-pulse" />
+      <div className="hero-device-label">
+        <span className="label-line" />
+        <p>
+          GRADE 5 TITANIUM<small>Precision in every contour.</small>
+        </p>
+      </div>
+      <div className="hero-bottom">
+        <a href="#chip">
+          <span className="scroll-dot">↓</span> SCROLL TO DISCOVER
+        </a>
+        <span>FORM. FEEL. FUTURE.</span>
+        <span>01 — 04</span>
       </div>
     </section>
   );

@@ -9,7 +9,10 @@ export default function Marquee() {
     >
       <div className="marquee-track flex w-max gap-14 whitespace-nowrap">
         {row.map((w, i) => (
-          <span key={i} className="text-[11px] tracking-[0.35em] uppercase text-mist flex items-center gap-14">
+          <span
+            key={i}
+            className="text-[11px] tracking-[0.35em] uppercase text-mist flex items-center gap-14"
+          >
             {w}
             <span className="w-1 h-1 rounded-full bg-gold/70" />
           </span>
