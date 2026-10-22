@@ -1,87 +1,37 @@
-import {
-  blackImg,
-  blueImg,
-  highlightFirstVideo,
-  highlightFourthVideo,
-  highlightSecondVideo,
-  highlightThirdVideo,
-  whiteImg,
-  yellowImg,
-} from '../utils';
-
-export const navLists = ['Store', 'Mac', 'iPhone', 'Support'];
-
-export const hightlightsSlides = [
+export const BRAND = 'AURA ONE';
+export const finishes = [
   {
-    id: 1,
-    textLists: [
-      'Enter A17 Pro.',
-      'Game‑changing chip.',
-      'Groundbreaking performance.',
-    ],
-    video: highlightFirstVideo,
-    videoDuration: 4,
+    id: 'desert',
+    name: 'Desert Titanium',
+    tagline: 'The warmth of the last light.',
+    tint: '#b9a68b',
+    dot: '#b9a68b',
   },
   {
-    id: 2,
-    textLists: ['Titanium.', 'So strong. So light. So Pro.'],
-    video: highlightSecondVideo,
-    videoDuration: 5,
+    id: 'glacier',
+    name: 'Glacier Titanium',
+    tagline: 'A quiet kind of brilliance.',
+    tint: '#d5d9dc',
+    dot: '#d5d9dc',
   },
   {
-    id: 3,
-    textLists: [
-      'iPhone 15 Pro Max has the',
-      'longest optical zoom in',
-      'iPhone ever. Far out.',
-    ],
-    video: highlightThirdVideo,
-    videoDuration: 2,
+    id: 'deepsea',
+    name: 'Deep Sea Titanium',
+    tagline: 'Depth, in a different light.',
+    tint: '#60788c',
+    dot: '#60788c',
   },
   {
-    id: 4,
-    textLists: ['All-new Action button.', 'What will yours do?.'],
-    video: highlightFourthVideo,
-    videoDuration: 3.63,
+    id: 'obsidian',
+    name: 'Obsidian Titanium',
+    tagline: 'Everything. Reduced to its essence.',
+    tint: '#51525a',
+    dot: '#51525a',
   },
 ];
-
-export const models = [
-  {
-    id: 1,
-    title: 'iPhone 15 Pro in Natural Titanium',
-    color: ['#8F8A81', '#ffe7b9', '#6f6c64'],
-    img: yellowImg,
-  },
-  {
-    id: 2,
-    title: 'iPhone 15 Pro in Blue Titanium',
-    color: ['#53596E', '#6395ff', '#21242e'],
-    img: blueImg,
-  },
-  {
-    id: 3,
-    title: 'iPhone 15 Pro in White Titanium',
-    color: ['#C9C8C2', '#ffffff', '#C9C8C2'],
-    img: whiteImg,
-  },
-  {
-    id: 4,
-    title: 'iPhone 15 Pro in Black Titanium',
-    color: ['#454749', '#3b3b3b', '#181819'],
-    img: blackImg,
-  },
-];
-
-export const sizes = [
-  { label: '6.1"', value: 'small' },
-  { label: '6.7"', value: 'large' },
-];
-
-export const footerLinks = [
-  'Privacy Policy',
-  'Terms of Use',
-  'Sales Policy',
-  'Legal',
-  'Site Map',
+export const marqueeWords = [
+  'SCULPTED IN TITANIUM',
+  'DESIGNED TO FEEL DIFFERENT',
+  'PRECISION IN EVERY CONTOUR',
+  'FORM MEETS POSSIBILITY',
 ];

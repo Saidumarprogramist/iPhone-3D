@@ -1,21 +1,9 @@
 module.exports = {
   root: true,
-  env: { browser: true, es2020: true },
-  extends: [
-    'eslint:recommended',
-    'plugin:react/recommended',
-    'plugin:react/jsx-runtime',
-    'plugin:react-hooks/recommended',
-  ],
-  ignorePatterns: ['dist', '.eslintrc.cjs'],
-  parserOptions: { ecmaVersion: 'latest', sourceType: 'module' },
-  settings: { react: { version: '18.2' } },
-  plugins: ['react-refresh', '@react-three'],
-  rules: {
-    'react/jsx-no-target-blank': 'off',
-    'react-refresh/only-export-components': [
-      'warn',
-      { allowConstantExport: true },
-    ],
-  },
+  env: { browser: true, es2022: true },
+  extends: ['eslint:recommended', 'plugin:react-hooks/recommended'],
+  parserOptions: { ecmaVersion: 'latest', sourceType: 'module', ecmaFeatures: { jsx: true } },
+  ignorePatterns: ['dist', 'node_modules'],
+  rules: { 'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z]', argsIgnorePattern: '^_' }] },
+  overrides: [{ files: ['*.cjs'], env: { node: true } }],
 };
