@@ -2,16 +2,85 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link
-      rel="icon"
-      type="image/svg+xml"
-      href="/public/assets/images/apple.svg"
+    <link rel="icon" type="image/svg+xml" href="/assets/images/apple.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#050507" />
+    <meta
+      name="description"
+      content="AURA ONE — a cinematic, interactive 3D product experience. Crafted with React Three Fiber, GSAP and light."
     />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Apple iPhone</title>
+    <title>AURA ONE — Titanium. Forged in Light.</title>
+
+    <style>
+      /* Critical CSS: the curtain stays until the WebGL scene is ready */
+      html,
+      body {
+        margin: 0;
+        background: #050507;
+        color: #f5f5f7;
+      }
+      #root {
+        min-height: 100dvh;
+      }
+      #boot {
+        position: fixed;
+        inset: 0;
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: radial-gradient(120% 90% at 50% 40%, #0c0d12 0%, #050507 70%);
+        transition: opacity 0.9s ease, visibility 0.9s;
+      }
+      #boot.done {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
+      .boot-inner {
+        text-align: center;
+        font-family: ui-sans-serif, -apple-system, 'Helvetica Neue', sans-serif;
+      }
+      .boot-ring {
+        width: 46px;
+        height: 46px;
+        margin: 0 auto 18px;
+        border-radius: 50%;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-top-color: #d8b25a;
+        animation: bootspin 1s linear infinite;
+      }
+      .boot-title {
+        letter-spacing: 0.4em;
+        font-size: 11px;
+        text-transform: uppercase;
+        color: #8b8b93;
+      }
+      @keyframes bootspin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .boot-ring {
+          animation-duration: 2.5s;
+        }
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>
+    <div id="boot" aria-live="polite">
+      <div class="boot-inner">
+        <div class="boot-ring" aria-hidden="true"></div>
+        <div class="boot-title">AURA ONE</div>
+        <noscript>
+          <p style="color: #afafb7; max-width: 30ch; margin: 12px auto 0">
+            This experience requires JavaScript. Enable it to continue.
+          </p>
+        </noscript>
+      </div>
+    </div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

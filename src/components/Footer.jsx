@@ -1,41 +1,23 @@
-import { footerLinks } from '../constants';
+import { BRAND } from '../constants';
 
-const Footer = () => {
+export default function Footer() {
   return (
-    <footer className='py-5 sm:px-10 px-5'>
-      <div className='screen-max-width'>
-        <div className='font-semibold text-gray text-xs'>
-          <p>
-            More ways to shop:{' '}
-            <span className='underline text-blue'>Find an Apple Store </span>
-            or <span className='underline text-blue'>other retailer </span>near
-            you.{' '}
-          </p>
-          <p className='font-semibold text-gray text-xs'>
-            Or call 000800-040-1966
-          </p>
+    <footer className="relative z-10 border-t border-white/[0.06] bg-ink-0/80 backdrop-blur-xl">
+      <div className="screen-max-width px-5 sm:px-10 py-12 flex flex-col sm:flex-row items-center justify-between gap-6">
+        <div className="flex items-center gap-3">
+          <span className="grid place-items-center w-6 h-6 rounded-full border border-gold/60 text-gold text-[10px] font-bold">A</span>
+          <span className="text-xs tracking-[0.3em] uppercase text-mist">{BRAND}</span>
         </div>
-
-        <div className='bg-neutral-700 my-5 h-[1px] w-full' />
-
-        <div className='flex md:flex-row flex-col md:items-center justify-between'>
-          <p className='font-semibold text-gray text-xs'>
-            Copright @ 2024 Apple Inc. All rights reserved.
-          </p>
-          <div className='flex'>
-            {footerLinks.map((link,i) => (
-              <p key={link} className='font-semibold text-gray text-xs'>
-                {link}{' '}
-                {i !== footerLinks.length - 1 && (
-                  <span className='mx-2'>|</span>
-                )}
-              </p>
-            ))}
-          </div>
-        </div>
+        <nav aria-label="Footer" className="flex gap-6 text-xs text-mist">
+          <a href="#hero" className="link-underline hover:text-snow transition-colors">Design</a>
+          <a href="#chip" className="link-underline hover:text-snow transition-colors">Performance</a>
+          <a href="#camera" className="link-underline hover:text-snow transition-colors">Camera</a>
+          <a href="#showroom" className="link-underline hover:text-snow transition-colors">Showroom</a>
+        </nav>
+        <p className="text-[11px] text-mist/70">
+          Fictional concept · React Three Fiber · GSAP · No real product affiliation
+        </p>
       </div>
     </footer>
   );
-};
-
-export default Footer;
+}

@@ -1,87 +1,97 @@
-import {
-  blackImg,
-  blueImg,
-  highlightFirstVideo,
-  highlightFourthVideo,
-  highlightSecondVideo,
-  highlightThirdVideo,
-  whiteImg,
-  yellowImg,
-} from '../utils';
+import yellowImg from '/assets/images/yellow.jpg';
+import blueImg from '/assets/images/blue.jpg';
+import whiteImg from '/assets/images/white.jpg';
+import blackImg from '/assets/images/black.jpg';
 
-export const navLists = ['Store', 'Mac', 'iPhone', 'Support'];
+export const BRAND = 'AURA ONE';
 
-export const hightlightsSlides = [
+/* Finishes — mapped onto the GLB material recolor pipeline.
+   `tint`  : body/frame color applied to paintable materials
+   `screen`: wallpaper texture shown on the display mesh
+   `dot`   : swatch UI color                                     */
+export const finishes = [
   {
-    id: 1,
-    textLists: [
-      'Enter A17 Pro.',
-      'Game‑changing chip.',
-      'Groundbreaking performance.',
-    ],
-    video: highlightFirstVideo,
-    videoDuration: 4,
+    id: 'desert',
+    name: 'Desert Titanium',
+    tagline: 'Warm alloy, brushed at dawn.',
+    tint: '#8F8A81',
+    screen: yellowImg,
+    dot: '#a89c86',
   },
   {
-    id: 2,
-    textLists: ['Titanium.', 'So strong. So light. So Pro.'],
-    video: highlightSecondVideo,
-    videoDuration: 5,
+    id: 'glacier',
+    name: 'Glacier Titanium',
+    tagline: 'Cold light in a single piece.',
+    tint: '#C9C8C2',
+    screen: whiteImg,
+    dot: '#d9d8d2',
   },
   {
-    id: 3,
-    textLists: [
-      'iPhone 15 Pro Max has the',
-      'longest optical zoom in',
-      'iPhone ever. Far out.',
-    ],
-    video: highlightThirdVideo,
-    videoDuration: 2,
+    id: 'deepsea',
+    name: 'Deep Sea Titanium',
+    tagline: 'Blue that behaves like steel.',
+    tint: '#53596E',
+    screen: blueImg,
+    dot: '#6f7a99',
   },
   {
-    id: 4,
-    textLists: ['All-new Action button.', 'What will yours do?.'],
-    video: highlightFourthVideo,
-    videoDuration: 3.63,
+    id: 'obsidian',
+    name: 'Obsidian Titanium',
+    tagline: 'Black hole polished matte.',
+    tint: '#454749',
+    screen: blackImg,
+    dot: '#3b3b3b',
   },
 ];
 
-export const models = [
+export const specs = [
+  { value: '6.82″', label: 'Luminous XDR ProMotion display, 1–120Hz always-on' },
+  { value: 'A19 Aura', label: '3nm SoC · 16-core neural engine · 42 TOPS' },
+  { value: '48MP', label: 'Periscope tele · 10× optical · night fusion' },
+  { value: 'Grade 5', label: 'Aerospace titanium unibody · IP69 sealed' },
+  { value: '31h', label: 'Video playback · 80W wired · 25W MagCharge' },
+  { value: '187g', label: 'The lightest Pro chassis ever milled' },
+];
+
+export const chapters = [
   {
-    id: 1,
-    title: 'iPhone 15 Pro in Natural Titanium',
-    color: ['#8F8A81', '#ffe7b9', '#6f6c64'],
-    img: yellowImg,
+    id: 'hero',
+    eyebrow: 'Introducing',
+    titleLines: ['Titanium.', 'Forged in Light.'],
+    copy: 'One block of aerospace-grade titanium. Ten days of milling. A surface that disappears into the dark.',
   },
   {
-    id: 2,
-    title: 'iPhone 15 Pro in Blue Titanium',
-    color: ['#53596E', '#6395ff', '#21242e'],
-    img: blueImg,
+    id: 'chip',
+    eyebrow: 'A19 Aura chip',
+    titleLines: ['Silence,', 'at 42 trillion', 'operations.'],
+    copy: 'The 3nm heart of AURA ONE renders cinematic ray tracing while staying colder than anything its size.',
   },
   {
-    id: 3,
-    title: 'iPhone 15 Pro in White Titanium',
-    color: ['#C9C8C2', '#ffffff', '#C9C8C2'],
-    img: whiteImg,
+    id: 'camera',
+    eyebrow: 'Photon Fusion camera',
+    titleLines: ['Collects', 'what the eye', 'misses.'],
+    copy: 'A 48MP periscope with a f/1.4 aperture pulls detail out of near-total darkness — no tripod, no noise.',
   },
   {
-    id: 4,
-    title: 'iPhone 15 Pro in Black Titanium',
-    color: ['#454749', '#3b3b3b', '#181819'],
-    img: blackImg,
+    id: 'showroom',
+    eyebrow: 'The Showroom',
+    titleLines: ['Four finishes.', 'One obsession.'],
+    copy: 'Drag to spin. Choose a finish and watch light behave differently on every alloy.',
+  },
+  {
+    id: 'cta',
+    eyebrow: 'Available now',
+    titleLines: ['Begin your', 'orbit.'],
+    copy: 'From $49.95/mo. for 24 months or $1,199. Free engraving. Always.',
   },
 ];
 
-export const sizes = [
-  { label: '6.1"', value: 'small' },
-  { label: '6.7"', value: 'large' },
-];
-
-export const footerLinks = [
-  'Privacy Policy',
-  'Terms of Use',
-  'Sales Policy',
-  'Legal',
-  'Site Map',
+export const marqueeWords = [
+  'TITANIUM GRADE 5',
+  'A19 AURA',
+  '120Hz PRO MOTION',
+  'PERISCOPE 10×',
+  'IP69',
+  'MAGCHARGE 25W',
+  '42 TOPS NEURAL',
 ];
